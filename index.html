@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Барбершоп «Север» — запись на стрижку</title>
+<meta name="description" content="Мужские стрижки, борода, бритьё. Запишитесь онлайн за минуту.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF1F4; --navy:#12233F; --red:#C8312B; --white:#fff; --steel:#5B6B80; --line:#CBD3DC;
+    --head:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+    --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);font-size:18px;line-height:1.55;color:var(--navy);background:var(--bg)}
+  a{color:inherit}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px 0 56px}
+
+  /* Полоса «барберского столба» — единственная анимация на странице */
+  .pole{position:fixed;left:0;top:0;bottom:0;width:20px;
+    background:repeating-linear-gradient(135deg,var(--red) 0 14px,var(--white) 14px 28px,var(--navy) 28px 42px,var(--white) 42px 56px);
+    background-size:80px 80px;animation:spin 6s linear infinite}
+  @keyframes spin{to{background-position:0 80px}}
+  @media (prefers-reduced-motion:reduce){.pole{animation:none}}
+
+  header{padding:20px 0;border-bottom:1px solid var(--line)}
+  header .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .logo{font-family:var(--head);font-weight:900;font-size:28px;text-decoration:none;letter-spacing:.02em}
+  header a.tel{font-weight:600;text-decoration:none}
+
+  .hero{padding:72px 0 64px}
+  h1{font-family:var(--head);font-weight:900;font-size:clamp(56px,11vw,120px);line-height:.92;max-width:11ch}
+  .hero p{margin-top:24px;max-width:34em;color:var(--steel);font-size:20px}
+  .btn{display:inline-block;margin-top:32px;background:var(--red);color:var(--white);font:600 18px var(--body);
+    padding:14px 28px;border:0;border-radius:4px;text-decoration:none;cursor:pointer}
+  .btn:hover{background:#a82620}
+  :focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  h2{font-family:var(--head);font-weight:700;font-size:44px;line-height:1;margin-bottom:28px}
+
+  .prices{list-style:none;padding:0;max-width:560px}
+  .prices li{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px dotted var(--steel)}
+  .prices span:last-child{font-weight:600;white-space:nowrap}
+
+  form{max-width:560px;display:grid;gap:18px}
+  label{display:grid;gap:6px;font-weight:600}
+  input,select,textarea{font:400 18px var(--body);color:var(--navy);padding:12px;border:1px solid var(--steel);
+    border-radius:4px;background:var(--white);width:100%}
+  textarea{min-height:90px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:520px){.row{grid-template-columns:1fr}}
+  .trap{position:absolute;left:-9999px}
+  #status{min-height:1.6em;font-weight:600}
+  #status.ok{color:#1d7a46} #status.err{color:var(--red)}
+  button[disabled]{opacity:.6;cursor:wait}
+
+  .contacts p{margin-bottom:8px}
+  footer{padding:32px 0;color:var(--steel);font-size:15px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="pole" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#top">СЕВЕР</a>
+    <a class="tel" href="tel:+77001234567">+7 700 123 45 67</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <h1>Стрижка без ожидания</h1>
+    <p>Мужской барбершоп в центре города. Выберите услугу и время — мы подтвердим запись по телефону в течение 15 минут.</p>
+    <a class="btn" href="#booking">Записаться</a>
+  </div>
+
+  <section id="prices">
+    <div class="wrap">
+      <h2>Услуги и цены</h2>
+      <ul class="prices">
+        <li><span>Мужская стрижка</span><span>5 000 ₸</span></li>
+        <li><span>Стрижка и борода</span><span>8 000 ₸</span></li>
+        <li><span>Моделирование бороды</span><span>3 500 ₸</span></li>
+        <li><span>Бритьё опасной бритвой</span><span>4 000 ₸</span></li>
+        <li><span>Детская стрижка</span><span>3 500 ₸</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="booking">
+    <div class="wrap">
+      <h2>Запись</h2>
+      <form id="form" novalidate>
+        <label>Имя
+          <input name="name" autocomplete="name" required maxlength="60">
+        </label>
+        <label>Телефон
+          <input name="phone" type="tel" autocomplete="tel" placeholder="+7 700 000 00 00" required maxlength="25">
+        </label>
+        <label>Услуга
+          <select name="service" required>
+            <option value="Мужская стрижка">Мужская стрижка — 5 000 ₸</option>
+            <option value="Стрижка и борода">Стрижка и борода — 8 000 ₸</option>
+            <option value="Моделирование бороды">Моделирование бороды — 3 500 ₸</option>
+            <option value="Бритьё опасной бритвой">Бритьё опасной бритвой — 4 000 ₸</option>
+            <option value="Детская стрижка">Детская стрижка — 3 500 ₸</option>
+          </select>
+        </label>
+        <div class="row">
+          <label>Дата
+            <input name="date" type="date" id="date" required>
+          </label>
+          <label>Время
+            <input name="time" type="time" min="10:00" max="21:00" step="1800" required>
+          </label>
+        </div>
+        <label>Комментарий (необязательно)
+          <textarea name="comment" maxlength="300"></textarea>
+        </label>
+        <input class="trap" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn" type="submit" id="send">Отправить заявку</button>
+        <p id="status" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <section id="contacts" class="contacts">
+    <div class="wrap">
+      <h2>Как нас найти</h2>
+      <p>г. Алматы, ул. Примерная, 10</p>
+      <p>Ежедневно с 10:00 до 21:00</p>
+      <p><a href="tel:+77001234567">+7 700 123 45 67</a></p>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">© Барбершоп «Север»</div></footer>
+
+<script>
+  var form = document.getElementById('form');
+  var statusEl = document.getElementById('status');
+  var sendBtn = document.getElementById('send');
+
+  // Нельзя выбрать прошедшую дату
+  var d = new Date();
+  document.getElementById('date').min =
+    d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    statusEl.className = '';
+    if (!form.checkValidity()) {
+      statusEl.className = 'err';
+      statusEl.textContent = 'Заполните имя, телефон, дату и время.';
+      return;
+    }
+    sendBtn.disabled = true;
+    statusEl.textContent = 'Отправляем…';
+    try {
+      var res = await fetch('/.netlify/functions/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+      });
+      if (!res.ok) throw new Error('bad status');
+      form.reset();
+      statusEl.className = 'ok';
+      statusEl.textContent = 'Заявка отправлена. Мы позвоним вам для подтверждения.';
+    } catch (err) {
+      statusEl.className = 'err';
+      statusEl.textContent = 'Не удалось отправить. Позвоните нам: +7 700 123 45 67.';
+    } finally {
+      sendBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
