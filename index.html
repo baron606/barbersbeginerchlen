@@ -94,6 +94,12 @@ iframe{width:100%;height:320px;border:0;border-radius:4px;background:var(--line)
 footer{background:var(--deep);color:#9FB0C6;padding:28px 0 90px;font-size:15px}
 .sticky{display:none}
 @media (max-width:760px){.sticky{display:block;position:fixed;left:20px;right:0;bottom:0;z-index:15;padding:10px 14px;background:var(--deep)}.sticky .btn{display:block;text-align:center}}
+.rform{display:grid;gap:14px;max-width:560px;margin-top:44px}
+.rform h3{font:700 28px var(--head)}
+.stars{color:var(--red);letter-spacing:2px;margin-bottom:4px}
+.reviews .empty{grid-column:1/-1;color:var(--steel)}
+#rstatus{min-height:1.6em;font-weight:600}
+#rstatus.ok{color:#1d7a46}#rstatus.err{color:var(--red)}
 </style>
 </head>
 <body>
@@ -163,11 +169,18 @@ footer{background:var(--deep);color:#9FB0C6;padding:28px 0 90px;font-size:15px}
 
   <section id="reviews" class="alt"><div class="wrap">
     <h2>Отзывы</h2>
-    <div class="reviews">
-      <blockquote><p>Записался вечером через сайт, утром уже позвонили и подтвердили. Постригли ровно как просил.</p><cite>Асхат</cite></blockquote>
-      <blockquote><p>Лучшая борода, что у меня была. Мастер сразу подсказал форму под моё лицо.</p><cite>Руслан</cite></blockquote>
-      <blockquote><p>Приводим сына каждый месяц. Не боится, не вертится, стрижка держится долго.</p><cite>Айгерим</cite></blockquote>
-    </div>
+    <div id="rlist" class="reviews"><p class="empty">Загружаем отзывы…</p></div>
+    <form id="rform" class="rform" novalidate>
+      <h3>Оставить отзыв</h3>
+      <div class="row">
+        <label>Имя<input name="name" maxlength="40" required></label>
+        <label>Оценка<select name="rating"><option value="5">5 — отлично</option><option value="4">4 — хорошо</option><option value="3">3 — нормально</option><option value="2">2 — плохо</option><option value="1">1 — ужасно</option></select></label>
+      </div>
+      <label>Ваш отзыв<textarea name="text" maxlength="500" required></textarea></label>
+      <input class="trap" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="btn" type="submit">Отправить отзыв</button>
+      <p id="rstatus" role="status"></p>
+    </form>
   </div></section>
 
   <section id="booking"><div class="wrap book">
@@ -241,6 +254,33 @@ form.addEventListener('submit',async function(e){
   }catch(err){statusEl.className='err';statusEl.textContent='Не удалось отправить. Позвоните нам: +7 700 123 45 67.';}
   finally{sendBtn.disabled=false;}
 });
+
+(function(){
+  var list=document.getElementById('rlist'),rf=document.getElementById('rform'),rs=document.getElementById('rstatus');
+  function note(t){list.textContent='';var p=document.createElement('p');p.className='empty';p.textContent=t;list.appendChild(p);}
+  function render(items){
+    if(!items.length){note('Пока нет отзывов. Станьте первым.');return;}
+    list.textContent='';
+    items.forEach(function(r){
+      var q=document.createElement('blockquote'),s=document.createElement('p'),t=document.createElement('p'),c=document.createElement('cite');
+      s.className='stars';s.textContent='★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+      t.textContent=r.text;c.textContent=r.name;
+      q.appendChild(s);q.appendChild(t);q.appendChild(c);list.appendChild(q);
+    });
+  }
+  fetch('/.netlify/functions/reviews').then(function(r){return r.json();}).then(render).catch(function(){note('Отзывы сейчас недоступны.');});
+  rf.addEventListener('submit',async function(e){
+    e.preventDefault();rs.className='';
+    var f=rf.elements;
+    if(f.name.value.trim().length<2||f.text.value.trim().length<10){rs.className='err';rs.textContent='Напишите имя и отзыв (не короче 10 символов).';return;}
+    rs.textContent='Отправляем…';
+    try{
+      var res=await fetch('/.netlify/functions/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:f.name.value,rating:f.rating.value,text:f.text.value,website:f.website.value})});
+      if(!res.ok)throw new Error('bad');
+      rf.reset();rs.className='ok';rs.textContent='Спасибо! Отзыв появится на сайте после проверки.';
+    }catch(err){rs.className='err';rs.textContent='Не удалось отправить отзыв. Попробуйте позже.';}
+  });
+})();
 </script>
 </body>
 </html>
